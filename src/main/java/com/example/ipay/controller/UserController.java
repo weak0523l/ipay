@@ -4,13 +4,17 @@ package com.example.ipay.controller;
 import com.example.ipay.bean.SysUsers;
 import com.example.ipay.conf.JwtUtil;
 import com.example.ipay.service.SysUsersService;
-import com.example.ipay.token.CheckToken;
-import com.example.ipay.token.LoginToken;
+import com.example.ipay.interceptor.CheckToken;
+import com.example.ipay.interceptor.LoginToken;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @Controller
 @RequestMapping("SysUsers")
@@ -25,6 +29,7 @@ public class UserController {
     @ResponseBody
     @LoginToken
     @ApiOperation("用户登录")
+    @ApiImplicitParam(paramType = "query",dataType = "body")
     public Object  login(@RequestBody SysUsers sysUsers){
         JSONObject jsonObject = new JSONObject();
         SysUsers bean = sysUsersService.login(sysUsers);
@@ -74,5 +79,14 @@ public class UserController {
     public String  delete(String id){
         sysUsersService.delete(id);
         return  "删除成功";
+    }
+
+    @PostMapping("list/{pagenow}/{pagecount}")
+    @ResponseBody
+    @LoginToken
+    @ApiOperation("查询用户")
+    public List<SysUsers> list(@PathVariable String pagenow,@PathVariable String pagecount){
+        List<SysUsers> list = sysUsersService.list(pagenow,pagecount);
+        return  list;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ipay.token;
+package com.example.ipay.interceptor;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -50,6 +50,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 // 执行认证
                 if (token == null) {
                     logger.error("无token");
+                    httpServletResponse.sendRedirect("http://localhost:8080/index");
                     return false;
 
 //                    throw new RuntimeException("无token，请重新登录");

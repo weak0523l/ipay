@@ -1,6 +1,6 @@
 package com.example.ipay.conf;
 
-import com.example.ipay.token.AuthenticationInterceptor;
+import com.example.ipay.interceptor.AuthenticationInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

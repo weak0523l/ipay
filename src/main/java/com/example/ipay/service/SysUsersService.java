@@ -3,6 +3,9 @@ package com.example.ipay.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.ipay.bean.SysUsers;
 
+import java.util.List;
+import java.util.Map;
+
 
 public interface SysUsersService extends IService<SysUsers> {
 
@@ -12,4 +15,6 @@ public interface SysUsersService extends IService<SysUsers> {
     Integer register(SysUsers sysUsers);
     void update(SysUsers sysUsers);
     void delete(String id);
+    List<SysUsers> list(String pagenow, String pagecount);
+    List<SysUsers> listSearch(String pagenow, String pagecount, Map<String,Object> condition);
 }

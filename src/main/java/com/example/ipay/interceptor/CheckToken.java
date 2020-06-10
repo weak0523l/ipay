@@ -1,4 +1,4 @@
-package com.example.ipay.token;
+package com.example.ipay.interceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

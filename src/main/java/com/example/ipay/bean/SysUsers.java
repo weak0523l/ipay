@@ -33,4 +33,7 @@ public class SysUsers {
     private String CreateUser;
     @TableField(exist = false)//该表中不存在字段
     private List<SysMenu> sysMenuList;
+    @TableField(exist = false)
+    private String roleName;
+
 }

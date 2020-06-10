@@ -2,12 +2,17 @@ package com.example.ipay.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.ipay.bean.SysUsers;
 import com.example.ipay.mapper.SysUsersMapper;
 import com.example.ipay.service.SysUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> implements SysUsersService {
@@ -53,6 +58,19 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     @Override
     public void delete(String id) {
         sysUsersMapper.deleteById(Integer.parseInt(id));
+    }
+
+    @Override
+    public List<SysUsers> list(String pagenow, String pagecount) {
+        Page<SysUsers> page = new Page<>(Integer.parseInt(pagenow),Integer.parseInt(pagecount));
+        IPage<SysUsers> iPage = sysUsersMapper.selectPage(page, null);
+        List<SysUsers> list = iPage.getRecords();
+        return list;
+    }
+
+    @Override
+    public List<SysUsers> listSearch(String pagenow, String pagecount, Map<String, Object> condition) {
+        return null;
     }
 
 }
