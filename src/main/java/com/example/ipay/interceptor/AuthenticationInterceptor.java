@@ -57,8 +57,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 }
                 // 获取 token 中的 user id
                 String userId;
+
                 try {
-                    userId = JWT.decode(token).getClaim("id+' ' ").asString();
+                    userId = JWT.decode(token).getClaim("id").asString();
                 } catch (JWTDecodeException j) {
                     throw new RuntimeException("访问异常！");
                 }

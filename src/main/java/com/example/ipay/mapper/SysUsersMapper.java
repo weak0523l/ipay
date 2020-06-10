@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 public interface SysUsersMapper extends BaseMapper<SysUsers> {
     @Select("SELECT " +
+            " su.id," +
             " su.UserName," +
             " su.PassWord, " +
             " sr.RoleName" +

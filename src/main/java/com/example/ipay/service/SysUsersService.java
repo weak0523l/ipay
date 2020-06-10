@@ -17,4 +17,5 @@ public interface SysUsersService extends IService<SysUsers> {
     void delete(String id);
     List<SysUsers> list(String pagenow, String pagecount);
     List<SysUsers> listSearch(String pagenow, String pagecount, Map<String,Object> condition);
+
 }
