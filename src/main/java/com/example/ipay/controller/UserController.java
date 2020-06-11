@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -34,11 +35,14 @@ public class UserController {
     @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
     public R  login(@RequestBody SysUsers sysUsers){
         SysUsers bean = sysUsersService.login(sysUsers);
+        HashMap<String,Object> map = new HashMap<>();
         if(bean==null){
             return R.error(400,"登陆失败");
         }
         String token = JwtUtil.createJWT(6000000,bean);
-        return R.ok(token);
+        map.put("token",token);
+        map.put("user",bean);
+        return R.ok(map);
     }
 
     @CheckToken
@@ -51,9 +55,11 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseBody
+    @LoginToken
     @ApiOperation("用户注册")
     @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
     public R register(@RequestBody SysUsers sysUsers){
+
         Integer isSuccees = sysUsersService.register(sysUsers);
         if (isSuccees == 0) {
             return R.error(400,"当前账号已存在");

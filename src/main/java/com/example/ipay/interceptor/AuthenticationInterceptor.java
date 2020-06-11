@@ -49,7 +49,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return false;
 
 //                    throw new RuntimeException("无token，请重新登录");
+
         }
+
         String userId;
         try {
             userId = JWT.decode(token).getClaim("id").asString();
@@ -58,7 +60,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         SysUsers user = sysUsersService.findUserById(userId);
-
+        logger.error(user.toString());
         if (user == null) {
             throw new RuntimeException("用户不存在，请重新登录");
         }
