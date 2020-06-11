@@ -13,8 +13,8 @@ public interface SysUsersService extends IService<SysUsers> {
     SysUsers findUserById (String id);
     SysUsers findUserByName (String userName);
     Integer register(SysUsers sysUsers);
-    void update(SysUsers sysUsers);
-    void delete(String id);
+    boolean update(SysUsers sysUsers);
+    boolean delete(String id);
     List<SysUsers> list(String pagenow, String pagecount);
     List<SysUsers> listSearch(String pagenow, String pagecount, Map<String,Object> condition);
 

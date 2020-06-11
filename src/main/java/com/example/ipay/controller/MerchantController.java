@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+
 @Controller
 @CrossOrigin
 @Api(tags = "测试商户管理")
@@ -44,6 +45,7 @@ public class MerchantController {
         payMerchantService.update(payMerchant);
         return "success";
     }
+
     @GetMapping("/getPage/{pagenow}/{pagecount}")
     @ResponseBody
     @ApiOperation("所有商户信息分页")

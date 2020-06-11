@@ -1,4 +1,4 @@
-package com.example.ipay.conf;
+package com.example.ipay.util;
 
 import com.example.ipay.bean.SysUsers;
 import io.jsonwebtoken.Claims;

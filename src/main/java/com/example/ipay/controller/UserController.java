@@ -2,13 +2,14 @@ package com.example.ipay.controller;
 
 
 import com.example.ipay.bean.SysUsers;
-import com.example.ipay.conf.JwtUtil;
-import com.example.ipay.service.SysUsersService;
 import com.example.ipay.interceptor.CheckToken;
 import com.example.ipay.interceptor.LoginToken;
+import com.example.ipay.service.SysUsersService;
+import com.example.ipay.util.JwtUtil;
+import com.example.ipay.util.R;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 
 @Controller
+@Api(value="用户controller",tags={"用户操作接口"})
 @RequestMapping("SysUsers")
 public class UserController {
 
@@ -25,21 +27,18 @@ public class UserController {
     SysUsersService sysUsersService;
 
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @ResponseBody
     @LoginToken
     @ApiOperation("用户登录")
-    @ApiImplicitParam(paramType = "query",dataType = "body")
-    public Object  login(@RequestBody SysUsers sysUsers){
-        JSONObject jsonObject = new JSONObject();
+    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
+    public R  login(@RequestBody SysUsers sysUsers){
         SysUsers bean = sysUsersService.login(sysUsers);
         if(bean==null){
-            return "FAIL";
+            return R.error(400,"登陆失败");
         }
-        String token = JwtUtil.createJWT(6000000, bean);
-        jsonObject.put("token", token);
-        jsonObject.put("user", bean);
-        return jsonObject;
+        String token = JwtUtil.createJWT(6000000,bean);
+        return R.ok(token);
     }
 
     @CheckToken
@@ -50,43 +49,55 @@ public class UserController {
     }
 
 
-    @PostMapping("register")
+    @PostMapping("/register")
     @ResponseBody
-    @LoginToken
     @ApiOperation("用户注册")
-    public String  register(@RequestBody SysUsers sysUsers){
+    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
+    public R register(@RequestBody SysUsers sysUsers){
         Integer isSuccees = sysUsersService.register(sysUsers);
         if (isSuccees == 0) {
-            return "账号已存在";
-        }else {
-            return "注册成功";
+            return R.error(400,"当前账号已存在");
+        }else if (isSuccees>0){
+            return R.ok("注册成功");
         }
+        return R.error(400,"注册失败");
     }
 
-    @PostMapping("update")
+    @PostMapping("/update")
     @ResponseBody
-    @LoginToken
     @ApiOperation("用户修改信息")
-    public String  update(@RequestBody SysUsers sysUsers){
-        sysUsersService.update(sysUsers);
-        return  "修改成功";
+    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
+    public R  update(@RequestBody SysUsers sysUsers){
+        if(sysUsersService.update(sysUsers)){
+            return R.ok("修改成功");
+        }
+        return  R.error(400,"修改失败");
     }
 
-    @PostMapping("delete")
+    @PostMapping("/delete")
     @ResponseBody
-    @LoginToken
     @ApiOperation("删除用户")
-    public String  delete(String id){
-        sysUsersService.delete(id);
-        return  "删除成功";
+    @ApiImplicitParam(name = "id" ,value = "用户id",required = true,dataType = "String")
+    public R  delete(String id){
+        if(sysUsersService.delete(id)){
+            return R.ok("删除成功");
+        }
+        return  R.error(400,"删除失败");
     }
 
-    @PostMapping("list/{pagenow}/{pagecount}")
+    @PostMapping("/list/{pagenow}/{pagecount}")
     @ResponseBody
-    @LoginToken
-    @ApiOperation("查询用户")
-    public List<SysUsers> list(@PathVariable String pagenow,@PathVariable String pagecount){
+    @ApiOperation(value = "查询用户",notes = "传入当前页码和每页数据数目")
+    @ApiImplicitParam(paramType = "String")
+    public R list(@PathVariable String pagenow,@PathVariable String pagecount){
+        if(pagenow.trim().equals("")||pagecount.trim().equals("")){
+            return R.error(400,"当前字段有空");
+        }
         List<SysUsers> list = sysUsersService.list(pagenow,pagecount);
-        return  list;
+        if(list==null){
+            return R.error(400,"未找到数据");
+        }
+        return  R.ok(list);
+
     }
 }

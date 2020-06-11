@@ -51,18 +51,21 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     }
 
     @Override
-    public void update(SysUsers sysUsers) {
-        sysUsersMapper.updateById(sysUsers);
+    public boolean update(SysUsers sysUsers) {
+
+         sysUsersMapper.updateById(sysUsers);
+         return true;
     }
 
     @Override
-    public void delete(String id) {
+    public boolean delete(String id) {
         sysUsersMapper.deleteById(Integer.parseInt(id));
+        return true;
     }
 
     @Override
     public List<SysUsers> list(String pagenow, String pagecount) {
-        Page<SysUsers> page = new Page<>(Integer.parseInt(pagenow),Integer.parseInt(pagecount));
+        Page<SysUsers> page = new Page<>(Integer.parseInt(pagenow.trim()),Integer.parseInt(pagecount.trim()));
         IPage<SysUsers> iPage = sysUsersMapper.selectPage(page, null);
         List<SysUsers> list = iPage.getRecords();
         return list;
