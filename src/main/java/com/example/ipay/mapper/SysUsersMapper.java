@@ -7,15 +7,14 @@ import org.apache.ibatis.annotations.Select;
 
 public interface SysUsersMapper extends BaseMapper<SysUsers> {
     @Select("SELECT " +
-            " su.id," +
+            " su.roleId, "+
             " su.UserName," +
-            " su.PassWord, " +
-            " sr.RoleName" +
+            " su.PassWord " +
             " FROM " +
             " Sys_Users su " +
             " INNER JOIN Sys_Roles sr ON su.RoleId = sr.ID  " +
             "WHERE " +
-            " su.UserName = #{UserName}  " +
-            " AND su.PassWord = #{PassWord} ")
-    SysUsers login(SysUsers sysUsers);
+            " su.UserName = #{username}  " +
+            " AND su.PassWord = #{password} ")
+    SysUsers login(String username ,String password);
 }

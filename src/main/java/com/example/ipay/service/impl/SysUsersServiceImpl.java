@@ -12,16 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> implements SysUsersService {
     @Autowired
     SysUsersMapper sysUsersMapper;
     @Override
-    public SysUsers login(SysUsers sysUsers) {
-        SysUsers bean = sysUsersMapper.login(sysUsers);
-        return bean;
+    public String login(String userName ,String password) {
+        SysUsers bean = sysUsersMapper.login(userName,password);
+        if(bean!=null){
+            return bean.getRoleId();
+        }
+        return null;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
         QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<SysUsers>();
         queryWrapper.eq("UserName",userName);
         SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
-        return null;
+        return bean;
     }
 
     @Override
@@ -71,9 +73,5 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
         return list;
     }
 
-    @Override
-    public List<SysUsers> listSearch(String pagenow, String pagecount, Map<String, Object> condition) {
-        return null;
-    }
 
 }

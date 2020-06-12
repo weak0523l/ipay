@@ -2,10 +2,8 @@ package com.example.ipay.controller;
 
 
 import com.example.ipay.bean.SysUsers;
-import com.example.ipay.interceptor.CheckToken;
-import com.example.ipay.interceptor.LoginToken;
 import com.example.ipay.service.SysUsersService;
-import com.example.ipay.util.JwtUtil;
+import com.example.ipay.util.JwtTokenUtils;
 import com.example.ipay.util.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -16,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
 @Api(value="用户controller",tags={"用户操作接口"})
-@RequestMapping("SysUsers")
+@RequestMapping("/SysUsers")
 public class UserController {
 
 
@@ -30,36 +29,32 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    @LoginToken
     @ApiOperation("用户登录")
-    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
-    public R  login(@RequestBody SysUsers sysUsers){
-        SysUsers bean = sysUsersService.login(sysUsers);
-        HashMap<String,Object> map = new HashMap<>();
-        if(bean==null){
-            return R.error(400,"登陆失败");
+    @ApiImplicitParam(name = "params" ,value = "包含账号密码",required = true,dataType = "Map<String,Object>")
+    public R  login(@RequestBody Map<String,Object> params){
+        Object username = params.get("username");
+        Object password = params.get("password");
+        if(username==null || password==null){
+            return R.error(400,"有未填写字段");
         }
-        String token = JwtUtil.createJWT(6000000,bean);
-        map.put("token",token);
-        map.put("user",bean);
-        return R.ok(map);
-    }
+        String roleId = sysUsersService.login(username.toString(),password.toString());
+        HashMap<String,Object> map = new HashMap<>();
+        if(roleId!=null){
+            String token = JwtTokenUtils.createToken(username.toString(),true);
+            map.put("token",token);
+            map.put("roleId",roleId);
+            return R.ok(map);
+        }
+        return R.error(400,"登陆失败");
 
-    @CheckToken
-    @GetMapping("/getMessage")
-    @ResponseBody
-    public String getMessage() {
-        return "你已通过验证";
     }
 
 
     @PostMapping("/register")
     @ResponseBody
-    @LoginToken
     @ApiOperation("用户注册")
-    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
+    @ApiImplicitParam(name = "SysUsers" ,value = "用户注册信息",required = true,dataType = "SysUsers")
     public R register(@RequestBody SysUsers sysUsers){
-
         Integer isSuccees = sysUsersService.register(sysUsers);
         if (isSuccees == 0) {
             return R.error(400,"当前账号已存在");
@@ -72,7 +67,7 @@ public class UserController {
     @PostMapping("/update")
     @ResponseBody
     @ApiOperation("用户修改信息")
-    @ApiImplicitParam(name = "SysUsers" ,value = "用户信息对象",required = true,dataType = "SysUsers")
+    @ApiImplicitParam(name = "SysUsers" ,value = "用户修改后信息",required = true,dataType = "SysUsers")
     public R  update(@RequestBody SysUsers sysUsers){
         if(sysUsersService.update(sysUsers)){
             return R.ok("修改成功");
@@ -106,4 +101,6 @@ public class UserController {
         return  R.ok(list);
 
     }
+
+
 }
