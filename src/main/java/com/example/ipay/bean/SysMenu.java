@@ -19,8 +19,8 @@ public class SysMenu {
     private String Name;
     @TableField("Title")
     private String Title;
-    @TableField("locn")
-    private String Locn;
+    @TableField("Icon")
+    private String Icon;
     @TableField("Route")
     private String Route;
     @TableField("Component")

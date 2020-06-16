@@ -1,19 +1,27 @@
 package com.example.ipay.controller;
 
 
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ipay.bean.PayMerchant;
 import com.example.ipay.bean.PayOrders;
 import com.example.ipay.service.PayMerchantService;
 import com.example.ipay.service.PayOrdersService;
+import com.example.ipay.util.FileUpload;
+import com.example.ipay.util.R;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -22,46 +30,132 @@ import java.util.List;
 public class MerchantController {
     @Autowired
     PayMerchantService payMerchantService;
-
+    @Autowired
+    PayOrdersService payOrdersService;
     @PostMapping("/insertList")
     @ResponseBody
     @ApiOperation("新增商户信息")
+    @ApiImplicitParam(name = "PayMerchant" ,value = "商户信息对象",required = true,dataType = "com.yishang.pay.merchantutil.bean.PayMerchant")
+    public R insertList(@RequestBody PayMerchant payMerchant){
+        //参数校验
+        if(
+                payMerchant.getId()!=null&&
+                payMerchant.getAppkey()!=null&&
+                payMerchant.getMerchname()!=null&&
+                payMerchant.getSwiffpassmerchno()!=null&&
+                payMerchant.getSwiffpasspaysecert()!=null&&
+                payMerchant.getOpenchannel()!=null&&
+                payMerchant.getCreatetime()!=null&&
+                payMerchant.getCreateuser()!=null&&
+                StringUtils.isNotBlank(payMerchant.getCertpath())
+        ){
+            if(payMerchantService.insertList(payMerchant)){
+                return R.ok("增加成功");
+        }
+            return R.error(400,"添加失败,数据不能为空");
+        }
 
-    public String insertList(@RequestBody PayMerchant payMerchant, @RequestParam("file") MultipartFile file){
-        payMerchantService.insertList(payMerchant, file);
-        return "success";
+       return R.error(400,"输入的值不符合规则,请重新输入");
     }
     @PostMapping("/delectById")
     @ResponseBody
-    @ApiOperation("删除商户信息")
-    public String delectById(String id){
-        payMerchantService.delectById(id);
-        return "success";
+    @ApiOperation(value = "根据商户ID删除商户信息")
+    @ApiImplicitParam(name = "id" ,value = "商户ID",required = true,dataType = "String")
+    public R delectById(@RequestBody String id){
+        //参数校验
+        if(StringUtils.isNotBlank(id)){
+            if(payMerchantService.delectById(id)){
+                return R.ok("删除成功！！");
+            }
+            return R.error(400,"删除失败");
+        }
+
+       return R.error(400,"请输入正确的ID");
     }
     @PostMapping("/update")
     @ResponseBody
     @ApiOperation("修改商户信息")
-    public String update(@RequestBody PayMerchant payMerchant){
-        payMerchantService.update(payMerchant);
-        return "success";
+    @ApiImplicitParam(name = "PayMerchant" ,value = "商户对象",required = true,dataType = "com.yishang.pay.merchantutil.bean.PayMerchant")
+    public R update(@RequestBody PayMerchant payMerchant){
+        //参数校验
+        if(payMerchantService.updateMerById(payMerchant)){
+            return R.ok("修改成功！");
+        }
+        return R.error(400,"修改失败");
+
+    }
+    @PostMapping(value = "/getPage")
+    @ResponseBody
+    @ApiOperation(value = "分页获取商户",notes = "获取用户列表")
+    @ApiImplicitParam(name = "params" ,value = "表单查询对象（pagenow-当前页和pagenum-每页显示条数必传）",required = true,dataType = "Map<String,Object>",paramType = "body")
+    public R getPage(@RequestBody Map<String,Object> params){
+        //参数校验
+        Object pagenow = params.get("pagenow");
+
+        Object pagenum = params.get("pagenum");
+        if(pagenow==null ||StringUtils.isBlank(pagenow+"")){
+
+            return R.error(400,"pagenow不能为空");
+
+        }if (pagenum==null ||StringUtils.isBlank(pagenum+"")){
+
+            return R.error(400,"pagenum不能为空");
+        }
+        Page<PayMerchant> page = new Page<>(Integer.parseInt(pagenow.toString()),Integer.parseInt(pagenum.toString()));
+
+        QueryWrapper<PayMerchant> wrapper = new QueryWrapper<>();
+
+        if(payMerchantService.page(page,wrapper).getRecords().size()!=0){
+
+            return R.ok(payMerchantService.page(page,wrapper));
+        }
+        return R.error(400,"查询失败");
     }
 
-    @GetMapping("/getPage/{pagenow}/{pagecount}")
-    @ResponseBody
-    @ApiOperation("所有商户信息分页")
-    public List<PayMerchant> getPage(@PathVariable String pagenow,@PathVariable String pagecount){
-        List<PayMerchant> payMerchants = payMerchantService.getPage(pagenow,pagecount);
-        return payMerchants;
-    }
-    @Autowired
-    PayOrdersService payOrdersService;
 
-    @GetMapping("/getPageOrder/{pagenow}/{pagecount}/{Appkey}")
+  /*  @PostMapping(value = "/getPageOrder")
     @ResponseBody
-    @ApiOperation("根据Appkey查询商户对应订单信息并进行分页")
-    public List<PayOrders> getPageOrder(@PathVariable String pagenow, @PathVariable String pagecount, @PathVariable String Appkey){
+    @ApiOperation(value = "根据Appkey查询商户对应订单信息并进行分页")
+    public List<PayOrders> getPageOrder( String pagenow, String pagecount, String Appkey){
         List<PayOrders> payOrders =  payOrdersService.getPageOrder(pagenow,pagecount,Appkey);
         return payOrders;
-    }
+    }*/
+    @PostMapping(value = "/getPageOrder")
+    @ResponseBody
+    @ApiOperation(value = "根据Appkey查询商户对应订单信息并进行分页")
+    @ApiImplicitParam(name = "params" , value = "表单查询对象（pagenow-当前页和pagenum-每页显示条数必传）",required = true,dataType = "Map<String,Object>",paramType = "body")
+    public R getPageOrder(@RequestBody Map<String,Object> params){
+        //参数校验
+        Object pagenow = params.get("pagenow");
 
+        Object pagenum = params.get("pagenum");
+        if(pagenow==null ||StringUtils.isBlank(pagenow+"")){
+
+            return R.error(400,"pagenow不能为空");
+
+        }if (pagenum==null ||StringUtils.isBlank(pagenum+"")){
+
+            return R.error(400,"pagenum不能为空");
+        }
+        Page<PayOrders> page = new Page<>(Integer.parseInt(params.get("pagenow").toString()),Integer.parseInt(params.get("pagenum").toString()));
+
+        QueryWrapper<PayOrders> wrapper = new QueryWrapper<>();
+
+        wrapper.eq("AppKey",params.get("appkey").toString());
+
+        return R.ok(payOrdersService.page(page,wrapper).getRecords());
+    }
+    @PostMapping("/upload")
+    @ResponseBody
+    @ApiOperation(value = "上传文件")
+    @ApiImplicitParam(name = "file",value = "文件上传",required = true,dataType = "MultipartFile")
+    public R uploadFile(@RequestBody MultipartFile file){
+        //new一个上传文件工具类
+        FileUpload fileUpload = new FileUpload();
+
+        //将工具类中返回的文件地址接受并返回给前端
+        String filePath = fileUpload.uploadFile(file);
+
+        return R.ok(filePath);
+    }
 }

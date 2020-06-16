@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 
 @NoArgsConstructor
@@ -31,9 +30,6 @@ public class SysUsers {
     private Date CreateTime;
     @TableField("CreateUser")
     private String CreateUser;
-    @TableField(exist = false)//该表中不存在字段
-    private List<SysMenu> sysMenuList;
-    @TableField(exist = false)
-    private String roleName;
-
+    /*@TableField(exist = false)//该表中不存在字段
+    private List<SysMenu> sysMenuList;*/
 }

@@ -9,12 +9,10 @@ public interface SysUsersMapper extends BaseMapper<SysUsers> {
     @Select("SELECT " +
             " su.roleId, "+
             " su.UserName," +
-            " su.PassWord " +
             " FROM " +
             " Sys_Users su " +
             " INNER JOIN Sys_Roles sr ON su.RoleId = sr.ID  " +
             "WHERE " +
-            " su.UserName = #{username}  " +
-            " AND su.PassWord = #{password} ")
-    SysUsers login(String username ,String password);
+            " su.UserName = #{username}  ")
+    SysUsers login(String username);
 }

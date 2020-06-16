@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+      <mapper namespace="com.example.ipay.mapper.SysRoleMenuMappingMapper">
+
+    <!-- <resultMap id="MenuMap" type="com.yishang.pay.merchantutil.bean.SysRoleMenuMapping">
+         <result column="MenuId" property="MenuId"/>
+         <collection property="menuList" ofType="com.yishang.pay.merchantutil.bean.SysMenu" column="ParentId">
+             <result column="Name" property="Name"/>
+             <result column="Title" property="Title"/>
+             <result column="Icon" property="Icon"/>
+             <result column="Route" property="Route"/>
+             <result column="Component" property="Component"/>
+             <result column="Sort" property="Sort"/>
+             <result column="CreateTime" property="CreateTime"/>
+             <result column="CreateUser" property="CreateUser"/>
+         </collection>
+         <collection property="rolesList" ofType="com.yishang.pay.merchantutil.bean.SysRoles" column="ID">
+             <result column="ID" property="RoleId"/>
+         </collection>
+     </resultMap>
+
+    <select id="getLoginUserMenu" resultMap="MenuMap" parameterType="java.lang.String">
+SELECT
+	srm.RoleId,
+	srm.MenuId,
+	sm.Name,
+	sm.Title,
+	sm.Icon,
+	sm.Route,
+	sm.Component,
+	sm.Sort,
+	sm.CreateTime,
+	sm.CreateUser
+FROM
+	Sys_RoleMenuMapping srm
+	INNER JOIN Sys_Menu sm ON sm.ParentId = srm.MenuId
+	INNER JOIN Sys_Roles sr ON sr.ID = srm.RoleId
+	WHERE sr.ID =#{id}
+    </select>-->
+    <select id="getLoginUserMenu" resultType="com.example.ipay.bean.vo.SysRoleMenuMappingVo" parameterType="java.lang.String">
+SELECT
+	srm.RoleId roleId,
+	srm.MenuId menuId,
+	sm.Name name,
+	sm.Title title,
+	sm.Icon icon,
+	sm.Route route,
+	sm.Component component,
+	sm.Sort sort,
+	sm.CreateTime createTime,
+	sm.CreateUser createUser
+FROM
+	Sys_RoleMenuMapping srm
+	INNER JOIN Sys_Menu sm ON sm.ParentId = srm.MenuId
+	INNER JOIN Sys_Roles sr ON sr.ID = srm.RoleId
+	WHERE sr.ID =#{id}
+    </select>
+
+</mapper>

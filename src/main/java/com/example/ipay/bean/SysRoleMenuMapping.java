@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -18,4 +20,8 @@ public class SysRoleMenuMapping {
     private String RoleId;
     @TableField("MenuId")
     private String MenuId;
+    @TableField(exist = false)//该表中不存在字段
+    private List<SysMenu> menuList;
+    @TableField(exist = false)//该表中不存在字段
+    private List<SysRoles> rolesList;
 }

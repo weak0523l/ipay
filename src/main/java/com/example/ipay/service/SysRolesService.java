@@ -7,4 +7,7 @@ import com.example.ipay.bean.SysRoles;
 
 public interface SysRolesService extends IService<SysRoles> {
 
+    boolean insert(SysRoles sysRoles);
+
+
 }

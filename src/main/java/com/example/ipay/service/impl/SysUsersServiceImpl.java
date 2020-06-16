@@ -2,24 +2,41 @@ package com.example.ipay.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.ipay.bean.SysUsers;
 import com.example.ipay.mapper.SysUsersMapper;
 import com.example.ipay.service.SysUsersService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.UUID;
+
 
 @Service
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> implements SysUsersService {
+
     @Autowired
     SysUsersMapper sysUsersMapper;
+
     @Override
-    public String login(String userName ,String password) {
-        SysUsers bean = sysUsersMapper.login(userName,password);
+    public boolean insertUser(SysUsers sysUsers) {
+
+        sysUsers.setPassWord(DigestUtils.md5Hex(sysUsers.getPassWord()));
+
+        sysUsers.setId(UUID.randomUUID().toString());
+
+        sysUsersMapper.insert(sysUsers);
+
+        return true;
+    }
+
+    @Override
+    public String login(String userName, String password) {
+        String md5Password = DigestUtils.md5Hex(password);
+        QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userName",userName).eq("password",md5Password);
+        SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
         if(bean!=null){
             return bean.getRoleId();
         }
@@ -27,51 +44,39 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     }
 
     @Override
-    public SysUsers findUserById(String id) {
-        SysUsers bean = sysUsersMapper.selectById(Integer.parseInt(id));
-        return bean;
-    }
-
-    @Override
-    public SysUsers findUserByName(String userName) {
-        QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<SysUsers>();
-        queryWrapper.eq("UserName",userName);
+    public boolean updatePassword(String newPassword,String userName) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("userName",userName);
         SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
-        return bean;
-    }
-
-    @Override
-    public Integer register(SysUsers sysUsers) {
-        QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<SysUsers>();
-        queryWrapper.eq("UserName",sysUsers.getUserName());
-        Integer result;
-        if(sysUsersMapper.selectCount(queryWrapper)>0){
-            return 0;
+        String md5NewPassword = DigestUtils.md5Hex(newPassword);
+        bean.setPassWord(md5NewPassword);
+        Integer result = sysUsersMapper.update(bean,queryWrapper);
+        if(result>0){
+            return true;
         }
-        result= sysUsersMapper.insert(sysUsers);
-        return result;
+        return false;
     }
 
     @Override
-    public boolean update(SysUsers sysUsers) {
+    public boolean delectUserById(String id) {
 
-         sysUsersMapper.updateById(sysUsers);
-         return true;
-    }
+        sysUsersMapper.deleteById(id);
 
-    @Override
-    public boolean delete(String id) {
-        sysUsersMapper.deleteById(Integer.parseInt(id));
         return true;
     }
 
     @Override
-    public List<SysUsers> list(String pagenow, String pagecount) {
-        Page<SysUsers> page = new Page<>(Integer.parseInt(pagenow.trim()),Integer.parseInt(pagecount.trim()));
-        IPage<SysUsers> iPage = sysUsersMapper.selectPage(page, null);
-        List<SysUsers> list = iPage.getRecords();
-        return list;
+    public boolean isUpdatePassword(String userName, String oldPassword) {
+        String md5Password = DigestUtils.md5Hex(oldPassword);
+        QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userName",userName).eq("password",md5Password);
+        Integer result = sysUsersMapper.selectCount(queryWrapper);
+        SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
+        System.out.println(result);
+        System.out.println(bean);
+        if(result>0){
+            return true;
+        }
+        return false;
     }
-
-
 }

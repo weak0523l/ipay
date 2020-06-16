@@ -31,5 +31,6 @@ public class PayMerchant implements Serializable {
     private String Createuser;
     private Date Createtime;
     @TableField(exist = false)//该表中不存在字段
-    private List<com.example.ipay.bean.PayOrders> payOrdersList;
+    private List<PayOrders> payOrdersList;
+
 }
