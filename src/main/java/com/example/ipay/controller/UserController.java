@@ -63,14 +63,14 @@ public class UserController {
         if(oldPassword==null||newPassword1==null||newPassword2==null){
             return R.error(400,"有未输入字段");
         }
-        if(sysUsersService.isUpdatePassword("admin",oldPassword.toString())==false){
+        if(sysUsersService.isUpdatePassword("1",oldPassword.toString())==false){
             return R.error(400,"旧密码错误");
         }
         if(newPassword1.equals(newPassword2)==false){
             return R.error(400,"新密码不一致");
         }
 
-        boolean result = sysUsersService.updatePassword(newPassword1.toString(),"admin");
+        boolean result = sysUsersService.updatePassword(newPassword1.toString(),"1");
         if(result){
             return R.ok("修改成功");
         }

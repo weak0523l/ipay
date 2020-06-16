@@ -44,9 +44,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     }
 
     @Override
-    public boolean updatePassword(String newPassword,String userName) {
+    public boolean updatePassword(String newPassword,String id) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("userName",userName);
+        queryWrapper.eq("id",id);
         SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
         String md5NewPassword = DigestUtils.md5Hex(newPassword);
         bean.setPassWord(md5NewPassword);
@@ -66,14 +66,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     }
 
     @Override
-    public boolean isUpdatePassword(String userName, String oldPassword) {
+    public boolean isUpdatePassword(String id, String oldPassword) {
         String md5Password = DigestUtils.md5Hex(oldPassword);
         QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userName",userName).eq("password",md5Password);
+        queryWrapper.eq("id",id).eq("password",md5Password);
         Integer result = sysUsersMapper.selectCount(queryWrapper);
-        SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
-        System.out.println(result);
-        System.out.println(bean);
         if(result>0){
             return true;
         }
