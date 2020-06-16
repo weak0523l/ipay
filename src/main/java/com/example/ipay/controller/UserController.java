@@ -77,7 +77,7 @@ public class UserController {
         return R.error(400,"修改失败");
     }
 
-    @GetMapping(value = "/list")
+    @PostMapping(value = "/list")
     @ResponseBody
     @ApiOperation("用户分页")
     @ApiImplicitParam(name = "params", value = "表单查询对象（pagenow-当前页和pagenum每页条数必传）", required = true, dataType = "Map<String,Object>", paramType = "body")
@@ -96,15 +96,17 @@ public class UserController {
 
             return R.error(400, "pagenum不能为空");
         }
+
         Page<SysUsers> page = new Page<>(Integer.parseInt(pagenow.toString()), Integer.parseInt(pagenum.toString()));
 
         QueryWrapper<SysUsers> wrapper = new QueryWrapper<>();
 
         if (sysUsersService.page(page, wrapper).getRecords().size() != 0) {
 
-            return R.ok(sysUsersService.page(page, wrapper));
+            return R.ok(sysUsersService.page(page, wrapper).getRecords());
         }
         return R.error(400, "查询失败");
+
     }
 
     @GetMapping(value = "/getMenuListByRoleId")
