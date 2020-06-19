@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ApiModel("菜单")
-public class SysMenu {
+public class SysMenu implements Serializable {
     @TableField("ID")
     private String id;
     @TableField("Name")

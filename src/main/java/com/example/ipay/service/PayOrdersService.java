@@ -11,8 +11,8 @@ public interface PayOrdersService extends IService<PayOrders> {
     
     
 
-    List<PayOrders> list(String pagenow, String pagecount);
 
+    List<PayOrders> list(String pagenow, String pagecount);
 
   //  List<PayOrders> getPageOrder(String pagenow, String pagenum, String appkey);
 }

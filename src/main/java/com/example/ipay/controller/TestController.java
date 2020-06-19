@@ -5,16 +5,13 @@ import com.example.ipay.bean.PayOrders;
 import com.example.ipay.conf.ExcelConfig;
 import com.example.ipay.service.PayOrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.FileOutputStream;
 import java.util.List;
 
 
-@Controller
+@RestController
 public class TestController {
 
     @Autowired
@@ -31,4 +28,16 @@ public class TestController {
         util.exportExcel("用户导出", columnNames, payOrders, new FileOutputStream("E:/test.xlsx "), ExcelConfig.EXCEl_FILE_2007);
         return payOrders;
     }
+
+    @GetMapping("/getMessage")
+    @ResponseBody
+    public String getMessage () {
+        return "hello horld";
+    }
+
+    @PostMapping("/test")
+    public String test(@RequestBody String text){
+        return text;
+    }
+
 }

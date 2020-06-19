@@ -8,6 +8,8 @@ import com.example.ipay.service.PayMerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -42,6 +44,22 @@ public class PayMerchantServiceImpl extends ServiceImpl<PayMerchantMapper, PayMe
 
     }
 
+    @Override
+    public String sumMoey(String appKey) {
+        String sumMoney = payMerchantMapper.sumMoney(appKey);
+        return sumMoney;
+    }
+
+    @Override
+    public List<Map> everydayMoney(String appKey) {
+        List<Map> list = payMerchantMapper.everydayMoney(appKey);
+        return list;
+    }
+
+    @Override
+    public String countOrder(String appKey) {
+        return null;
+    }
 
 
 }

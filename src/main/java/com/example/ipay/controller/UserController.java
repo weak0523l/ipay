@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ipay.bean.SysRoleMenuMapping;
 import com.example.ipay.bean.SysUsers;
+import com.example.ipay.bean.UserContext;
 import com.example.ipay.service.SysRoleMenuMappingService;
 import com.example.ipay.service.SysUsersService;
 import com.example.ipay.util.JwtTokenUtils;
@@ -14,16 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/sysUsers")
 public class UserController {
 
     @Autowired
@@ -36,18 +35,20 @@ public class UserController {
     @ApiOperation("用户登录")
     @ApiImplicitParam(name = "params" ,value = "包含账号密码",required = true,dataType = "Map<String,Object>")
     public R  login(@RequestBody Map<String,Object> params){
-        Object username = params.get("username");
+        Object userName = params.get("userName");
         Object password = params.get("password");
-        if(username==null || password==null){
+
+        if(userName==null || password==null){
             return R.error(400,"有未填写字段");
         }
-        String roleId = sysUsersService.login(username.toString(),password.toString());
+        SysUsers sysUsers = sysUsersService.login(userName.toString(),password.toString());
         Map<String,Object> map = new HashMap<>();
-        if(roleId!=null){
-            String token = JwtTokenUtils.createToken(username.toString(),true);
+        if(sysUsers!=null){
+            String token = JwtTokenUtils.createToken(sysUsers.getId(),true);
             map.put("token",token);
-            map.put("roleId",roleId);
-            return R.ok(map);
+            map.put("roleId",sysUsers.getRoleId());
+            return R.ok(token);
+
         }
         return R.error(400,"登陆失败");
     }
@@ -113,6 +114,7 @@ public class UserController {
     @ResponseBody
     @ApiOperation("查询角色所对应的菜单功能")
     public R getMenuListByRoleId(String id) {
+        SysUsers sysUsers = sysUsersService.getById(UserContext.get());
         //参数校验
         if (id != null) {
             List<SysRoleMenuMapping> sysMenus = sysRoleMenuMappingService.getMenuListByRoleId(id);
@@ -120,6 +122,13 @@ public class UserController {
             return R.ok(sysMenus);
         }
         return R.error(400, "没接收到id");
+    }
+
+    @PostMapping("/getMenu")
+    public R getMenu(){
+        SysUsers sysUsers = sysUsersService.getById(UserContext.get());
+        List<SysRoleMenuMapping> list = sysRoleMenuMappingService.getMenuListByRoleId(sysUsers.getRoleId());
+        return R.ok().put("menuList",list);
     }
 
     @PostMapping(value = "insertUser")
@@ -158,4 +167,18 @@ public class UserController {
 
         return R.error(400,"请输入正确的ID");
     }
+
+    @GetMapping (value = "/getUserInfo")
+    @ResponseBody
+    @ApiOperation(value = "根据用户ID获取用户信息")
+    public R getUserInfo(){
+        //参数校验
+        SysUsers sysUsers = sysUsersService.getById(UserContext.get());
+        System.out.println(UserContext.get());
+        if(sysUsers==null){
+            return R.error(400,"未查询到该用户");
+        }
+        return R.ok().put("sysUsers",sysUsers);
+    }
+
 }

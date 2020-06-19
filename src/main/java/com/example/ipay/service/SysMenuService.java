@@ -6,4 +6,11 @@ import com.example.ipay.bean.SysMenu;
 
 public interface SysMenuService extends IService<SysMenu> {
 
+    boolean  insertList(SysMenu sysMenu);
+
+    boolean delectById(String id);
+
+    boolean updateById(SysMenu sysMenu);
+
+
 }

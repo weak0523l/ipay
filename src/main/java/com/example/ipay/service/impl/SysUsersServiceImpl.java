@@ -32,13 +32,13 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
     }
 
     @Override
-    public String login(String userName, String password) {
+    public SysUsers login(String userName, String password) {
         String md5Password = DigestUtils.md5Hex(password);
         QueryWrapper<SysUsers> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userName",userName).eq("password",md5Password);
         SysUsers bean = sysUsersMapper.selectOne(queryWrapper);
         if(bean!=null){
-            return bean.getRoleId();
+            return bean;
         }
         return null;
     }
@@ -59,10 +59,12 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUsers> i
 
     @Override
     public boolean delectUserById(String id) {
-
-        sysUsersMapper.deleteById(id);
-
-        return true;
+        Integer result = sysUsersMapper.deleteById(id);
+        System.out.println(id);
+        if(result>0){
+            return true;
+        }
+       return false;
     }
 
     @Override

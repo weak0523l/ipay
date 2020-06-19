@@ -8,7 +8,7 @@ public interface SysUsersService extends IService<SysUsers> {
 
 
     boolean insertUser(SysUsers sysUsers);
-    String login(String userName, String password);
+    SysUsers login(String userName, String password);
 
     boolean updatePassword(String newPassword,String id);
     boolean delectUserById(String id);
